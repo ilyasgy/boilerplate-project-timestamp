@@ -18,15 +18,35 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-
-// your first API endpoint... 
+// first API endpoint
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+// Timestamp Microservice logic
+app.get("/api/:date?", function (req, res) {
+  let dateParam = req.params.date;
+  let date;
 
+  if (!dateParam) {
+    date = new Date();
+  } else if (!isNaN(dateParam)) {
+    date = new Date(parseInt(dateParam));
+  } else {
+    date = new Date(dateParam);
+  }
 
-// Listen on port set in environment variable or default to 3000
+  if (date.toString() === "Invalid Date") {
+    return res.json({ error: "Invalid Date" });
+  }
+
+  res.json({
+    unix: date.getTime(),
+    utc: date.toUTCString()
+  });
+});
+
+// listen on port
 var listener = app.listen(process.env.PORT || 3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
